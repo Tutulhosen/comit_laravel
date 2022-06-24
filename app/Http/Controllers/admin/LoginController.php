@@ -6,8 +6,10 @@ use App\Models\Role;
 use App\Models\AdminUser;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Mail\UserAccountMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class LoginController extends Controller
 {
@@ -76,7 +78,15 @@ class LoginController extends Controller
             'password'                          =>Hash::make('123456789'),
             'role_id'                           =>$request->role,
         ]);
-        return redirect()->route('admin.reg')->with('success', 'Your registration is successful. LogIn Now');
+        $data=[
+            'name'  =>$request->name,
+            'cell'  =>$request->cell,
+            'email'  =>$request->email,
+            'username'  =>$request->username,
+            'password'  =>'123456789',
+        ];
+        Mail::to($request->email)->send(new UserAccountMail($data));
+        return redirect()->route('admin.reg')->with('success', 'Your registration is successful. Check your email');
 
 
     }
